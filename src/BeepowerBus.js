@@ -97,5 +97,41 @@ BeePower.Bus.prototype.publish = function(topic, toSendObj) {
     this.client.send(message);
 };
 
+BeePower.Bus.prototype.match = function(topic, wildCardTopic) {
+    function equals(t, wt) {
+        if ( t == wt ) return true;
+        return !!(wt == "+" && t.charAt(t.length - 1) != ':');
+    }
+
+    if ( wildCardTopic == "#" )
+        return true;
+    if ( topic.indexOf("#") != -1) {
+        if (topic.substr(topic.length - 2) != "/#") return false;
+    }
+
+    var topicW = wildCardTopic;
+    var hasSharp = false;
+    // has #
+    if ( wildCardTopic.indexOf("#") != -1 ) {
+        if (wildCardTopic.substr(topic.length - 2) != "/#") return false;
+        topicW = wildCardTopic.substr(0, wildCardTopic.length - 2);
+        hasSharp = true;
+    }
+
+    // no '#'
+    var st = StringTokenizer(topic, "/");
+    var sw = StringTokenizer(topicW, "/");
+    while (sw.hasMoreTokens()) {
+        if (!st.hasMoreTokens())
+            return false;
+        if (!equals(st.nextToken(), sw.nextToken()))
+            return false;
+    }
+    //  case: log/m/n/p,  log/m/#
+    if (hasSharp) return true;
+    // case: log/m/n, log/m/+
+    return !st.hasMoreTokens();
+};
+
 //定义一个全局变量供所有人使用
 var DataBus = new BusData("mq.beepower.com.cn", "9001", "web_client_ip");
