@@ -1,4 +1,4 @@
-// 声明一个全局对象Namespace，用来注册命名空间
+//声明一个全局对象Namespace，用来注册命名空间
 var Namespace = {};
 
 // 全局对象仅仅存在register函数，参数为名称空间全路径，如"Grandsoft.GEA"
@@ -24,28 +24,46 @@ Namespace.register("BeePower.Bus");
 
 // BeePower.Mqtt命名空间里面声明类Client
 BeePower.Bus = function(host, port, clientId) {
+    //this.messageProto = dcodeIO.ProtoBuf.loadProtoFile("proto/message.proto").build("domain.message");
+    this.messageProto = {};
     this.client = new Paho.MQTT.Client(host, Number(port), clientId);
+    this.topicToHandlers = [];
     this.connectNum = 0;
     this.connect();
 };
 
-BeePower.Bus.prototype.onMessageArrived = function() {
-
+BeePower.Bus.prototype.onMessageArrived = function(msg) {
+    var beeMsg = this.messageProto.BeeMessage.decode(msg.payloadBytes);
+    for(var i = 0; i < this.topicToHandlers.length; i++) {
+        if(this.match(topic, this.topicToHandlers[i].topic)) {
+            var handlers = this.topicToHandlers[i].handlers;
+            for(var j = 0; j < handlers.length; j++) {
+                handlers[j](beeMsg);
+            }
+        }
+    }
 };
 
 BeePower.Bus.prototype.onConnectionLost = function() {
     console.log("connection lost!");
-    setTimeout("DataBus.connect()", 30000);
+    setTimeout("DataBus.connect()", 10000);
 };
 
 BeePower.Bus.prototype.onSuccess = function() {
     console.log("connection success!");
     this.connectNum++;
+    if(this.connectNum > 1) {
+        console.log("connectedNum = " + this.connectNum + " and resubscribe:");
+        for(var i = 0; i < this.topicToHandlers.length; i++) {
+            console.log("Subscribe: " + this.topicToHandlers[i].topic);
+            subscribe(this.topicToHandlers[i].topic);
+        }
+    }
 };
 
 BeePower.Bus.prototype.onFailure = function() {
     console.log("connection failed!");
-    setTimeout("DataBus.connect()", 30000);
+    setTimeout("DataBus.connect()", 10000);
 };
 
 BeePower.Bus.prototype.connect = function() {
@@ -54,14 +72,14 @@ BeePower.Bus.prototype.connect = function() {
     //client.onConnect = bp_onConnect;
     console.log("connection...");
 
-    this.client.onMessageArrived = onMessageArrived;
-    this.client.onConnectionLost = onConnectionLost;
-
+    this.client.onMessageArrived = this.onMessageArrived;
+    this.client.onConnectionLost = this.onConnectionLost;
+    var onSuccess = this.onSuccess;
+    var onFailure = this.onFailure;
     this.client.connect({
         timeout:30,//如果在改时间端内尚未连接成功，则认为连接失败  默认为30秒
         userName:user,
         password:password,
-        willMessage: 'a will message!',//当连接非正常断开时，发送此遗言消息
         //keepAliveInterval:60, //心跳信号 默认为60秒
         cleanSession:true, //若设为false，MQTT服务器将持久化客户端会话的主体订阅和ACK位置，默认为true
         //useSSL:false,
@@ -70,31 +88,52 @@ BeePower.Bus.prototype.connect = function() {
         onFailure: onFailure
     });
     console.log("!!! connection finished !!!");
-    if(this.connectNum > 0) {
-        //resubscribe
-    }
 };
 
 BeePower.Bus.prototype.subscribe = function(topic, handler) {
-    this.client.subscribe(topic);
+    for(var i = 0; i < this.topicToHandlers.length; i++) {
+        if(this.topicToHandlers[i].topic == topic) {
+            var handlers = this.topicToHandlers[i].handlers;
+            for(var j = 0; j < handlers.length; j++) {
+                if (handlers[j] == handler)
+                    return;
+            }
+            handlers.push(handler);
+            return;
+        }
+    }
+    this.topicToHandlers.push({topic : topic, handlers: [handler]});
+    if(this.client.isConnected())
+        this.client.subscribe(topic);
 };
 
 BeePower.Bus.prototype.unsubscribe = function(topic, handler) {
-    this.client.unsubscribe();
+    var shouldUnsubscribe = false;
+    for(var i = 0; i < this.topicToHandlers.length; i++) {
+        if(this.topicToHandlers[i].topic == topic) {
+            var handlers = this.topicToHandlers[i].handlers;
+            for(var j = 0; j < handlers.length; j++) {
+                if(handlers[j] == handler) {
+                    handlers.splice(j, 1);
+                    shouldUnsubscribe = handlers.length == 0;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    if(shouldUnsubscribe && this.client.isConnected())
+        this.client.unsubscribe(topic);
 };
 
 BeePower.Bus.prototype.publish = function(topic, toSendObj) {
-    var oriBuf = toSendObj.encode().toBuffer();
-    var buf = new ArrayBuffer(oriBuf.byteLength + 1);
-    //先把测试标识位写进去
-    var writer = new DataView(buf);
-    writer.setInt8(0, 0);
-    var reader = new DataView(oriBuf);
-    for(var i = 0; i < oriBuf.byteLength; i++)
-        writer.setUint8(i + 1, reader.getUint8(i));
-    var message = new Paho.MQTT.Message(buf);
+    var beeMsg = new this.messageProto.BeeMessage();
+    beeMsg.payLoad = toSendObj.encode().toBuffer();
+    beeMsg.testFlag = 1;
+    var message = new Paho.MQTT.Message(beeMsg.encode().toBuffer());
     message.destinationName = topic;
-    this.client.send(message);
+    if(this.client.isConnected())
+        this.client.send(message);
 };
 
 BeePower.Bus.prototype.match = function(topic, wildCardTopic) {
@@ -119,19 +158,19 @@ BeePower.Bus.prototype.match = function(topic, wildCardTopic) {
     }
 
     // no '#'
-    var st = StringTokenizer(topic, "/");
-    var sw = StringTokenizer(topicW, "/");
-    while (sw.hasMoreTokens()) {
-        if (!st.hasMoreTokens())
+    var st = topic.split("/");
+    var sw = topicW.split("/");
+    for(var i = 0; i < sw.length; i++) {
+        if (st.length <= i)
             return false;
-        if (!equals(st.nextToken(), sw.nextToken()))
+        if (!equals(st[i], sw[i]))
             return false;
     }
     //  case: log/m/n/p,  log/m/#
     if (hasSharp) return true;
     // case: log/m/n, log/m/+
-    return !st.hasMoreTokens();
+    return st.length == st.length
 };
 
 //定义一个全局变量供所有人使用
-var DataBus = new BusData("mq.beepower.com.cn", "9001", "web_client_ip");
+var DataBus = new BeePower.Bus("mq.beepower.com.cn", 9001, "web_client_ip");

@@ -19,3 +19,5 @@ protobuf.js: 5.0.0
 对于mqtt的支持主要依赖了http://git.eclipse.org/c/paho/org.eclipse.paho.mqtt.javascript.git/中的：
 
 mqttws31.js: 1.0.1
+
+qunit.js: 1.14.0

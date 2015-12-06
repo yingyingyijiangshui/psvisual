@@ -30,7 +30,7 @@ BeePower.Svg.Viewer.prototype.load = function(svgPath) {
             var desc = this.getElementsByTagName("desc");
             if(desc == null)
                 return false;
-            for(var i = 0; i < desc.length; i++) {
+            for(i = 0; i < desc.length; i++) {
                 if(desc[i].childNodes.length < 1)
                     continue;
                 var descValue = desc[i].childNodes[0].nodeValue;
@@ -46,7 +46,7 @@ BeePower.Svg.Viewer.prototype.load = function(svgPath) {
         });
     });
     return map;
-}
+};
 
 BeePower.Svg.Viewer.prototype.subscribe = function(topicToDomNode) {
     console.log("subscribe start");
@@ -82,7 +82,7 @@ BeePower.Svg.Viewer.prototype.subscribe = function(topicToDomNode) {
                     return;
                 d3.select("#" + textNode.id).text(fieldDisplayNames[index] + ":" + receivedV.toFixed(1));
             }
-        }
+        };
 
         onSuccess = function(success) {
             console.log("connection success!");
@@ -92,8 +92,8 @@ BeePower.Svg.Viewer.prototype.subscribe = function(topicToDomNode) {
                 console.log("subscribe topic : " + topic);
                 client.subscribe(topic);
             });
-        }
+        };
 
         client.connect(onSuccess, onFailure, onConnectionLost, onMessageArrived);
     }
-}
+};

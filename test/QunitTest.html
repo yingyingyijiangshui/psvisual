@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QUnit Test Suite</title>
+    <link rel="stylesheet" href="../css/qunit.css" type="text/css" media="screen">
+    <script type="text/javascript" src="../lib/qunit.js"></script>
+
+    <script src="../lib/long.js"></script>
+    <script src="../lib/bytebuffer.js"></script>
+    <script src="../lib/protobuf.js"></script>
+    <script src="../lib/mqttws31.js"></script>
+    <script src="../src/BeepowerBus.js"></script>
+</head>
+
+<body>
+<h1 id="qunit-header">QUnit Test Suite</h1>
+<h2 id="qunit-banner"></h2>
+<div id="qunit-testrunner-toolbar"></div>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>
+
+<!-- test start -->
+<script>
+    test("Test Method 1", function () {
+        DataBus.subscribe("test");
+        ok(DataBus.topicToHandlers.length == 1, "Test Method 1 Pass");
+    });
+</script>
+
+<!-- test end -->
+</body>
+</html>
