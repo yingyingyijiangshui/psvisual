@@ -22,10 +22,9 @@ Namespace.register("BeePower.Bus");
 
 //================================= Mqtt =================================
 
-// BeePower.Mqtt命名空间里面声明类Client
+//命名对象BeePower.Bus
 BeePower.Bus = function(host, port, clientId) {
-    //this.messageProto = dcodeIO.ProtoBuf.loadProtoFile("proto/message.proto").build("domain.message");
-    this.messageProto = {};
+    this.messageProto = dcodeIO.ProtoBuf.loadProtoFile("../proto/message.proto").build("domain.message");
     this.client = new Paho.MQTT.Client(host, Number(port), clientId);
     this.topicToHandlers = [];
     this.connectNum = 0;
@@ -126,12 +125,38 @@ BeePower.Bus.prototype.unsubscribe = function(topic, handler) {
         this.client.unsubscribe(topic);
 };
 
-BeePower.Bus.prototype.publish = function(topic, toSendObj) {
+BeePower.Bus.prototype.publish = function(publishOptions) {
+    publishOptions = publishOptions || {} ;
+    if(publishOptions.topic === undefined)
+        return; //没有主题的消息是不会发送的
+    if(publishOptions.clientIdFlag === undefined)
+        publishOptions.clientIdFlag = true;
+    if(publishOptions.messageIdFlag === undefined)
+        publishOptions.messageIdFlag = true;
     var beeMsg = new this.messageProto.BeeMessage();
-    beeMsg.payLoad = toSendObj.encode().toBuffer();
-    beeMsg.testFlag = 1;
+    beeMsg.topic = publishOptions.topic;
+    beeMsg.payLoad = new this.messageProto.Payload();
+
+    if(publishOptions.payload !== undefined) {
+        if(publishOptions.payload instanceof Array) {
+            beeMsg.payLoad.value = dcodeIO.ByteBuffer.fromBinary(String.fromCharCode(publishOptions.payload));
+        } else if(typeof publishOptions.payload == "string") {
+            beeMsg.payLoad.value = dcodeIO.ByteBuffer.fromUTF8(publishOptions.payload.toString());
+        } else { //不是字节数组,就是
+            beeMsg.payLoad.value = publishOptions.payload.encode();
+        }
+    }
+    if (publishOptions.qos !== undefined && publishOptions.qos != 0) beeMsg.payLoad.qos = publishOptions.qos;
+    if (publishOptions.retained !== undefined && publishOptions.retained) beeMsg.payLoad.retain_flag = publishOptions.retained;
+    // 这三个其实已经反映在 Payload 中.
+    if (publishOptions.testFlag !== undefined && publishOptions.testFlag) beeMsg.payLoad.payLoad.test_flag = publishOptions.testFlag;
+    if (publishOptions.clientIdFlag ) beeMsg.payLoad.clientId = "";//todo:
+    if (publishOptions.messageIdFlag ) {
+        var msgId = 1;//todo:
+        beeMsg.payLoad.messageId  = msgId;
+    }
     var message = new Paho.MQTT.Message(beeMsg.encode().toBuffer());
-    message.destinationName = topic;
+    message.destinationName = beeMsg.topic;
     if(this.client.isConnected())
         this.client.send(message);
 };
@@ -152,7 +177,7 @@ BeePower.Bus.prototype.match = function(topic, wildCardTopic) {
     var hasSharp = false;
     // has #
     if ( wildCardTopic.indexOf("#") != -1 ) {
-        if (wildCardTopic.substr(topic.length - 2) != "/#") return false;
+        if (wildCardTopic.substr(wildCardTopic.length - 2) != "/#") return false;
         topicW = wildCardTopic.substr(0, wildCardTopic.length - 2);
         hasSharp = true;
     }

@@ -24,7 +24,7 @@
 <script>
     test("Test Method Subscribe 1", function () {
         DataBus.subscribe("test");
-        ok(DataBus.topicToHandlers.length == 1, "Test Method 1 Pass");
+        ok(DataBus.topicToHandlers.length == 1, "Test Method Subscribe Pass");
     });
 
     test("Test Method Match", function () {
@@ -42,31 +42,40 @@
         // #, zero or more levels, must be the last character
         ok(DataBus.match("log/m/n", "log/#"));
 
-        Log.vt(Tag, ":: testMatch3");
         ok(DataBus.match("log/m/n", "log/#"));
         ok(DataBus.match("log/m/n", "log/m/n/#"));
         ok(DataBus.match("log/m/n", "log/+/n/#"));
         ok(DataBus.match("log/m/n", "log/+/#"));
-        ok(DataBus.match("log/m/n", "log/#/n/"));
-        ok(DataBus.match("log/m/n", "log/#/#"));
+        ok(!DataBus.match("log/m/n", "log/#/n/"));
+        ok(!DataBus.match("log/m/n", "log/#/#"));
 
          // endsWith ':', should compare directly
         ok(!DataBus.match("mqtt://log/m/n", "+//log/m/n"));
         // hhh, 2015.1.6
-        ok(DataBus.match("mqtt://log/m/n", "mqtt:/log/m/n"));
-        ok(DataBus.match("mqtt://log/m/n", "ipc://log/m/n"));
+        //ok(DataBus.match("mqtt://log/m/n", "mqtt:/log/m/n"));
+        ok(!DataBus.match("mqtt://log/m/n", "ipc://log/m/n"));
         ok(DataBus.match("mqtt://log/m/n", "mqtt://log/+/n"));
         // hhh,2015.3.5
-        ok(DataBus.match("mqtt://log/m/n", "mqtt://log/+/n/"));
+        //ok(DataBus.match("mqtt://log/m/n", "mqtt://log/+/n/"));
         ok(DataBus.match("mqtt://log/m/n/", "mqtt://log/+/n"));
 
         ok(DataBus.match("log/+/n", "log/#"));
         ok(DataBus.match("log/m/+", "log/m/+/#"));
         ok(DataBus.match("log/+/n", "log/+/n/#"));
         ok(DataBus.match("log/+/n", "log/+/#"));
-        ok(DataBus.match("log/#/n", "log/+/n/"));
-        ok(DataBus.match("+/+/n", "log/+/n/"));
+        ok(!DataBus.match("log/#/n", "log/+/n/"));
+        ok(!DataBus.match("+/+/n", "log/+/n/"));
         ok(DataBus.match("log/+/n", "log/+/#"));
+    });
+
+    test("Test Method Publish", function () {
+        DataBus.subscribe("test", function(msg) {
+            console.log(msg);
+        });
+        DataBus.publish({topic: "test", payload : "haha"});
+        DataBus.publish({topic: "test", payload : [1,2,3]});
+        ok(DataBus.topicToHandlers.length == 1, "Test Method Publish Pass");
+        setTimeout("console.log('finished')", 3000);
     });
 </script>
 
