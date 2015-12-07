@@ -22,9 +22,51 @@
 
 <!-- test start -->
 <script>
-    test("Test Method 1", function () {
+    test("Test Method Subscribe 1", function () {
         DataBus.subscribe("test");
         ok(DataBus.topicToHandlers.length == 1, "Test Method 1 Pass");
+    });
+
+    test("Test Method Match", function () {
+        ok(DataBus.match("log/m/n", "+/m/n"));
+        ok(DataBus.match("log/log", "#"));
+        ok(DataBus.match("log/m/n", "+/m/n"));
+        ok(DataBus.match("log/m/n", "log/+/n"));
+        ok(DataBus.match("log/m/n", "log/m/+"));
+        ok(DataBus.match("log/m/", "log/m/#"));
+        ok(DataBus.match("log/m", "log/m/#"));
+        ok(DataBus.match("log//n", "log/+/n"));  // 前者只有两项
+        ok(DataBus.match("log/m/", "log/m/+"));
+        //
+        ok(!DataBus.match("log/m", "log/m/+"));
+        // #, zero or more levels, must be the last character
+        ok(DataBus.match("log/m/n", "log/#"));
+
+        Log.vt(Tag, ":: testMatch3");
+        ok(DataBus.match("log/m/n", "log/#"));
+        ok(DataBus.match("log/m/n", "log/m/n/#"));
+        ok(DataBus.match("log/m/n", "log/+/n/#"));
+        ok(DataBus.match("log/m/n", "log/+/#"));
+        ok(DataBus.match("log/m/n", "log/#/n/"));
+        ok(DataBus.match("log/m/n", "log/#/#"));
+
+         // endsWith ':', should compare directly
+        ok(!DataBus.match("mqtt://log/m/n", "+//log/m/n"));
+        // hhh, 2015.1.6
+        ok(DataBus.match("mqtt://log/m/n", "mqtt:/log/m/n"));
+        ok(DataBus.match("mqtt://log/m/n", "ipc://log/m/n"));
+        ok(DataBus.match("mqtt://log/m/n", "mqtt://log/+/n"));
+        // hhh,2015.3.5
+        ok(DataBus.match("mqtt://log/m/n", "mqtt://log/+/n/"));
+        ok(DataBus.match("mqtt://log/m/n/", "mqtt://log/+/n"));
+
+        ok(DataBus.match("log/+/n", "log/#"));
+        ok(DataBus.match("log/m/+", "log/m/+/#"));
+        ok(DataBus.match("log/+/n", "log/+/n/#"));
+        ok(DataBus.match("log/+/n", "log/+/#"));
+        ok(DataBus.match("log/#/n", "log/+/n/"));
+        ok(DataBus.match("+/+/n", "log/+/n/"));
+        ok(DataBus.match("log/+/n", "log/+/#"));
     });
 </script>
 
