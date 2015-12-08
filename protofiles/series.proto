@@ -1,0 +1,47 @@
+package domain.mapdb;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "cn.beepower.domain.message";
+
+message TLV {
+    optional string t = 1;
+    optional bytes  v = 2;
+}
+
+message Items {
+    repeated int32  i = 1;
+    repeated int64  l = 2;
+    repeated float  f = 3;
+    repeated double d = 4;
+    repeated bool   b = 5;
+    repeated string s = 6;
+    repeated bytes  bs = 7;
+}
+
+message Series {
+	optional string dbName = 1 ;
+    optional string mapName = 2 ;
+
+    // 每个表都有一系列相应属性，可以将其存为TLV. 参见： SeriesProperty
+    optional TLV   property = 5 ;
+
+    optional string keyType = 12;
+    optional string valueType = 13;
+    // 以 map<String,Long> 为例, 所有的String 组成一个keys, 所有的Long组成另外一个key.
+    optional Items keys = 14 ;
+    optional Items values = 15 ;
+}
+
+message QueryParam {
+    optional string dbName = 1 ;
+    optional string mapName = 2 ;
+
+    optional TLV   fromKey = 5  ;
+    optional bool  fromInclusive = 6 [default = true] ;
+    optional TLV   toKey = 7  ;
+    optional bool  toInclusive = 8 [default = false] ;
+
+    // 所需记录数目. 如果为-1, 则返回全部
+    optional int32 itemNumber = 9 [default = -1];
+    optional bool  ascendingOrder = 10 [default = true];
+}

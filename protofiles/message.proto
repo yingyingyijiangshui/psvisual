@@ -1,0 +1,28 @@
+package domain.message;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "cn.beepower.domain.message";
+
+message Payload {
+    optional bytes  value = 1;
+
+	optional bool   test_flag = 10 [default = false];
+
+	optional string clientId  = 14 [default = ""];
+	optional int64  messageId = 15 [default = 0];
+}
+
+message BeeMessage {
+	enum MessageType {
+		PUBLISH = 0;
+		SUBSCRIBE = 1;
+		UNSUBSCRIBE = 2;
+	}
+
+	optional string  topic = 1;
+    optional Payload payload = 2;
+
+	optional MessageType message_type = 5 [default = PUBLISH];
+	optional int32 qos = 6 [default = 0];
+	optional bool  retain_flag = 7 [default = false];
+}

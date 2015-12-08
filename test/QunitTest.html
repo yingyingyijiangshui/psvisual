@@ -22,11 +22,6 @@
 
 <!-- test start -->
 <script>
-    test("Test Method Subscribe 1", function () {
-        DataBus.subscribe("test");
-        ok(DataBus.topicToHandlers.length == 1, "Test Method Subscribe Pass");
-    });
-
     test("Test Method Match", function () {
         ok(DataBus.match("log/m/n", "+/m/n"));
         ok(DataBus.match("log/log", "#"));
@@ -77,6 +72,13 @@
         ok(DataBus.topicToHandlers.length == 1, "Test Method Publish Pass");
         setTimeout("console.log('finished')", 3000);
     });
+    test("Test Method Subscribe 1", function () {
+        DataBus.subscribe("+/EigOut/M_/+", function(msg) {
+            console.log("clientId : " + msg.payload.clientId + " messageId: " + msg.payload.messageId)
+        });
+        ok(DataBus.topicToHandlers.length == 2);
+    });
+
 </script>
 
 <!-- test end -->

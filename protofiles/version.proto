@@ -1,0 +1,29 @@
+package domain.version;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "cn.beepower.domain.version";
+
+// http://www.iteye.com/topic/973166
+message Artifact {
+    // groupId:artifactId:packaging:version
+    optional string groupId = 1;
+    optional string artifactId = 2;
+
+    // <major version>.<minor version>.<incremental version>-<qualifier>
+    optional string version = 3;
+    optional string oldVersion = 4;
+
+    optional string packaging = 5;
+    optional string classifier = 6;
+}
+
+message ArtifactDiff {
+    optional Artifact artifact = 1;
+
+    optional int32 size = 4;
+    // byte
+    optional int32 checksum = 5;
+
+    repeated int32 commands = 7;
+    repeated bytes inserted = 8;
+}

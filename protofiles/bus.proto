@@ -1,0 +1,24 @@
+package domain.bus;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "cn.beepower.domain.bus";
+
+message AuthInfo {
+	optional string clientId = 1;
+	optional string email = 2;
+	optional string phoneNumber = 3;
+	optional bool   androidFlag = 4 [default = false];
+}
+
+message CertInfo {
+	optional string name = 1;
+	optional bytes  content = 2;
+}
+
+
+message LogInfo {
+    optional string tag = 1;
+    optional int32  level = 2;
+    optional string message = 3;
+    optional string throwable = 4;
+}

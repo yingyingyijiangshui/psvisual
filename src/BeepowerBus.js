@@ -24,15 +24,16 @@ Namespace.register("BeePower.Bus");
 
 //命名对象BeePower.Bus
 BeePower.Bus = function(host, port, clientId) {
-    this.messageProto = dcodeIO.ProtoBuf.loadProtoFile("../proto/message.proto").build("domain.message");
+    this.messageProto = dcodeIO.ProtoBuf.loadProtoFile("../protofiles/message.proto").build("domain.message");
     this.client = new Paho.MQTT.Client(host, Number(port), clientId);
     this.topicToHandlers = [];
-    this.connectNum = 0;
     this.connect();
 };
 
 BeePower.Bus.prototype.onMessageArrived = function(msg) {
+    console.log("Message arrived!!");
     var beeMsg = this.messageProto.BeeMessage.decode(msg.payloadBytes);
+    console.log("Message arrived 2 ======!!");
     for(var i = 0; i < this.topicToHandlers.length; i++) {
         if(this.match(topic, this.topicToHandlers[i].topic)) {
             var handlers = this.topicToHandlers[i].handlers;
@@ -50,13 +51,9 @@ BeePower.Bus.prototype.onConnectionLost = function() {
 
 BeePower.Bus.prototype.onSuccess = function() {
     console.log("connection success!");
-    this.connectNum++;
-    if(this.connectNum > 1) {
-        console.log("connectedNum = " + this.connectNum + " and resubscribe:");
-        for(var i = 0; i < this.topicToHandlers.length; i++) {
-            console.log("Subscribe: " + this.topicToHandlers[i].topic);
-            subscribe(this.topicToHandlers[i].topic);
-        }
+    for(var i = 0; i < this.topicToHandlers.length; i++) {
+        this.client.subscribe(this.topicToHandlers[i].topic);
+        console.log("Subscribed: " + this.topicToHandlers[i].topic);
     }
 };
 
@@ -73,7 +70,9 @@ BeePower.Bus.prototype.connect = function() {
 
     this.client.onMessageArrived = this.onMessageArrived;
     this.client.onConnectionLost = this.onConnectionLost;
-    var onSuccess = this.onSuccess;
+    var onSuccess = function() {
+        setTimeout("DataBus.onSuccess()", 0);
+    };
     var onFailure = this.onFailure;
     this.client.connect({
         timeout:30,//如果在改时间端内尚未连接成功，则认为连接失败  默认为30秒
@@ -102,8 +101,10 @@ BeePower.Bus.prototype.subscribe = function(topic, handler) {
         }
     }
     this.topicToHandlers.push({topic : topic, handlers: [handler]});
-    if(this.client.isConnected())
+    if(this.client.isConnected()) {
         this.client.subscribe(topic);
+        console.log("Subscribed: " + topic);
+    }
 };
 
 BeePower.Bus.prototype.unsubscribe = function(topic, handler) {
