@@ -52,8 +52,8 @@ BeePower.Svg.Viewer.prototype.subscribe = function(topicToDomNode) {
     console.log("subscribe start");
     //存在动态数据需要查询
     if(topicToDomNode.size > 0) {
-        var messageProto = dcodeIO.ProtoBuf.loadProtoFile("proto/message.proto").build("domain.message");
-        var fesProto = dcodeIO.ProtoBuf.loadProtoFile("proto/fes.proto").build("eig.fes");
+        var messageProto = dcodeIO.ProtoBuf.loadProtoFile("protofiles/message.protofiles").build("domain.message");
+        var fesProto = dcodeIO.ProtoBuf.loadProtoFile("protofiles/fes.protofiles").build("eig.fes");
         var bytes = new Uint8Array(2);
         bytes[0] = 0;
         bytes[0] = 0;
