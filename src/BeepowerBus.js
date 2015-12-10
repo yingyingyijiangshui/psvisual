@@ -32,10 +32,14 @@ BeePower.Bus = function(host, port, clientId) {
 
 BeePower.Bus.prototype.onMessageArrived = function(msg) {
     console.log("Message arrived!!");
-    var beeMsg = this.messageProto.BeeMessage.decode(msg.payloadBytes);
-    console.log("Message arrived 2 ======!!");
+    var payload = this.messageProto.Payload.decode(msg.payloadBytes);
+    var beeMsg = new this.messageProto.BeeMessage();
+    beeMsg.topic = msg.destinationName;
+    beeMsg.qos = msg.qos;
+    beeMsg.retain_flag = msg.retained;
+    beeMsg.payload = payload;
     for(var i = 0; i < this.topicToHandlers.length; i++) {
-        if(this.match(topic, this.topicToHandlers[i].topic)) {
+        if(this.match(beeMsg.topic, this.topicToHandlers[i].topic)) {
             var handlers = this.topicToHandlers[i].handlers;
             for(var j = 0; j < handlers.length; j++) {
                 handlers[j](beeMsg);
@@ -68,12 +72,15 @@ BeePower.Bus.prototype.connect = function() {
     //client.onConnect = bp_onConnect;
     console.log("connection...");
 
-    this.client.onMessageArrived = this.onMessageArrived;
     this.client.onConnectionLost = this.onConnectionLost;
+    var onMessageArrived = function(msg) {
+        DataBus.onMessageArrived(msg);
+    };
     var onSuccess = function() {
-        setTimeout("DataBus.onSuccess()", 0);
+        DataBus.onSuccess();
     };
     var onFailure = this.onFailure;
+    this.client.onMessageArrived = onMessageArrived;
     this.client.connect({
         timeout:30,//如果在改时间端内尚未连接成功，则认为连接失败  默认为30秒
         userName:user,
@@ -134,32 +141,30 @@ BeePower.Bus.prototype.publish = function(publishOptions) {
         publishOptions.clientIdFlag = true;
     if(publishOptions.messageIdFlag === undefined)
         publishOptions.messageIdFlag = true;
-    var beeMsg = new this.messageProto.BeeMessage();
-    beeMsg.topic = publishOptions.topic;
-    beeMsg.payLoad = new this.messageProto.Payload();
+    var payLoad = new this.messageProto.Payload();
 
     if(publishOptions.payload !== undefined) {
         if(publishOptions.payload instanceof Array) {
-            beeMsg.payLoad.value = dcodeIO.ByteBuffer.fromBinary(String.fromCharCode(publishOptions.payload));
+            payLoad.value = dcodeIO.ByteBuffer.fromBinary(String.fromCharCode(publishOptions.payload));
         } else if(typeof publishOptions.payload == "string") {
-            beeMsg.payLoad.value = dcodeIO.ByteBuffer.fromUTF8(publishOptions.payload.toString());
+            payLoad.value = dcodeIO.ByteBuffer.fromUTF8(publishOptions.payload.toString());
         } else { //不是字节数组,就是
-            beeMsg.payLoad.value = publishOptions.payload.encode();
+            payLoad.value = publishOptions.payload.encode();
         }
     }
-    if (publishOptions.qos !== undefined && publishOptions.qos != 0) beeMsg.payLoad.qos = publishOptions.qos;
-    if (publishOptions.retained !== undefined && publishOptions.retained) beeMsg.payLoad.retain_flag = publishOptions.retained;
+    var qos = 0;
+    var retain_flag = false;
+    if (publishOptions.qos !== undefined && publishOptions.qos != 0) qos = publishOptions.qos;
+    if (publishOptions.retained !== undefined && publishOptions.retained) retain_flag = publishOptions.retained;
     // 这三个其实已经反映在 Payload 中.
-    if (publishOptions.testFlag !== undefined && publishOptions.testFlag) beeMsg.payLoad.payLoad.test_flag = publishOptions.testFlag;
-    if (publishOptions.clientIdFlag ) beeMsg.payLoad.clientId = "";//todo:
+    if (publishOptions.testFlag !== undefined && publishOptions.testFlag) payLoad.test_flag = publishOptions.testFlag;
+    if (publishOptions.clientIdFlag ) payLoad.clientId = "";//todo:
     if (publishOptions.messageIdFlag ) {
         var msgId = 1;//todo:
-        beeMsg.payLoad.messageId  = msgId;
+        payLoad.messageId  = msgId;
     }
-    var message = new Paho.MQTT.Message(beeMsg.encode().toBuffer());
-    message.destinationName = beeMsg.topic;
     if(this.client.isConnected())
-        this.client.send(message);
+        this.client.send(publishOptions.topic, payLoad.encode().toBuffer(), qos, retain_flag);
 };
 
 BeePower.Bus.prototype.match = function(topic, wildCardTopic) {
