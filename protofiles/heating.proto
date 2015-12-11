@@ -1,0 +1,18 @@
+option java_package = "cn.beepower.eig.heating";
+
+message HeaterControllerInfo {
+    required string tSensor = 1;
+    repeated string heaterSckIds = 2;
+    optional TCurve tempLimit = 3;
+}
+
+message HeaterSckCmd {
+    required string tSensor = 1;
+    repeated string heaterSckIds = 2;
+    repeated bool heaterSckCmd = 3;
+}
+
+message TCurve {
+    repeated float lowerT = 1;
+    repeated float upperT = 2;
+}

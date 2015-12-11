@@ -18,22 +18,21 @@ Namespace.register = function(fullNS) {
 };
 
 // 注册命名空间
-Namespace.register("BeePower.Bus");
+Namespace.register("beepower.bus");
 
 //================================= Mqtt =================================
 
-//命名对象BeePower.Bus
-BeePower.Bus = function(host, port, clientId) {
-    this.messageProto = dcodeIO.ProtoBuf.loadProtoFile("../protofiles/message.proto").build("domain.message");
+//命名对象beepower.bus
+beepower.bus.MqttDataBus = function(host, port, clientId) {
     this.client = new Paho.MQTT.Client(host, Number(port), clientId);
     this.topicToHandlers = [];
     this.connect();
 };
 
-BeePower.Bus.prototype.onMessageArrived = function(msg) {
+beepower.bus.MqttDataBus.prototype.onMessageArrived = function(msg) {
     console.log("Message arrived!!");
-    var payload = this.messageProto.Payload.decode(msg.payloadBytes);
-    var beeMsg = new this.messageProto.BeeMessage();
+    var payload = messageProto.Payload.decode(msg.payloadBytes);
+    var beeMsg = new messageProto.BeeMessage();
     beeMsg.topic = msg.destinationName;
     beeMsg.qos = msg.qos;
     beeMsg.retain_flag = msg.retained;
@@ -48,12 +47,12 @@ BeePower.Bus.prototype.onMessageArrived = function(msg) {
     }
 };
 
-BeePower.Bus.prototype.onConnectionLost = function() {
+beepower.bus.MqttDataBus.prototype.onConnectionLost = function() {
     console.log("connection lost!");
     setTimeout("DataBus.connect()", 10000);
 };
 
-BeePower.Bus.prototype.onSuccess = function() {
+beepower.bus.MqttDataBus.prototype.onSuccess = function() {
     console.log("connection success!");
     for(var i = 0; i < this.topicToHandlers.length; i++) {
         this.client.subscribe(this.topicToHandlers[i].topic);
@@ -61,12 +60,12 @@ BeePower.Bus.prototype.onSuccess = function() {
     }
 };
 
-BeePower.Bus.prototype.onFailure = function() {
+beepower.bus.MqttDataBus.prototype.onFailure = function() {
     console.log("connection failed!");
     setTimeout("DataBus.connect()", 10000);
 };
 
-BeePower.Bus.prototype.connect = function() {
+beepower.bus.MqttDataBus.prototype.connect = function() {
     var user = "testUser";
     var password = "";
     //client.onConnect = bp_onConnect;
@@ -95,7 +94,7 @@ BeePower.Bus.prototype.connect = function() {
     console.log("!!! connection finished !!!");
 };
 
-BeePower.Bus.prototype.subscribe = function(topic, handler) {
+beepower.bus.MqttDataBus.prototype.subscribe = function(topic, handler) {
     for(var i = 0; i < this.topicToHandlers.length; i++) {
         if(this.topicToHandlers[i].topic == topic) {
             var handlers = this.topicToHandlers[i].handlers;
@@ -114,7 +113,7 @@ BeePower.Bus.prototype.subscribe = function(topic, handler) {
     }
 };
 
-BeePower.Bus.prototype.unsubscribe = function(topic, handler) {
+beepower.bus.MqttDataBus.prototype.unsubscribe = function(topic, handler) {
     var shouldUnsubscribe = false;
     for(var i = 0; i < this.topicToHandlers.length; i++) {
         if(this.topicToHandlers[i].topic == topic) {
@@ -133,7 +132,7 @@ BeePower.Bus.prototype.unsubscribe = function(topic, handler) {
         this.client.unsubscribe(topic);
 };
 
-BeePower.Bus.prototype.publish = function(publishOptions) {
+beepower.bus.MqttDataBus.prototype.publish = function(publishOptions) {
     publishOptions = publishOptions || {} ;
     if(publishOptions.topic === undefined)
         return; //没有主题的消息是不会发送的
@@ -141,7 +140,7 @@ BeePower.Bus.prototype.publish = function(publishOptions) {
         publishOptions.clientIdFlag = true;
     if(publishOptions.messageIdFlag === undefined)
         publishOptions.messageIdFlag = true;
-    var payLoad = new this.messageProto.Payload();
+    var payLoad = new messageProto.Payload();
 
     if(publishOptions.payload !== undefined) {
         if(publishOptions.payload instanceof Array) {
@@ -167,7 +166,7 @@ BeePower.Bus.prototype.publish = function(publishOptions) {
         this.client.send(publishOptions.topic, payLoad.encode().toBuffer(), qos, retain_flag);
 };
 
-BeePower.Bus.prototype.match = function(topic, wildCardTopic) {
+beepower.bus.MqttDataBus.prototype.match = function(topic, wildCardTopic) {
     function equals(t, wt) {
         if ( t == wt ) return true;
         return !!(wt == "+" && t.charAt(t.length - 1) != ':');
@@ -204,4 +203,10 @@ BeePower.Bus.prototype.match = function(topic, wildCardTopic) {
 };
 
 //定义一个全局变量供所有人使用
-var DataBus = new BeePower.Bus("mq.beepower.com.cn", 9001, "web_client_ip");
+var messageProto = dcodeIO.ProtoBuf.loadProtoFile("../protofiles/message.proto").build("domain.message");
+var fesProto = dcodeIO.ProtoBuf.loadProtoFile("../protofiles/fes.proto").build("eig.fes");
+var defaultFesMBytes = new Uint8Array(2);
+defaultFesMBytes[0] = 0;
+defaultFesMBytes[0] = 0;
+var defaultFesM = fesProto.PowerValue.decode(defaultFesMBytes);
+var DataBus = new beepower.bus.MqttDataBus("mq.beepower.com.cn", 9001, "web_client_ip");
