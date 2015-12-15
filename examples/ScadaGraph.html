@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scada 画面效果</title>
+
+    <script src="../lib/long.js"></script>
+    <script src="../lib/bytebuffer.js"></script>
+    <script src="../lib/protobuf.js"></script>
+    <script src="../lib/mqttws31.js"></script>
+    <script src="../lib/d3.js"></script>
+    <script src="../src/BeepowerBus.js"></script>
+    <script src="../src/BeepowerSvg.js"></script>
+</head>
+<body>
+<script>
+    var viewer = new beepower.svg.ScadaViewer();
+    viewer.load("test.svg");
+</script>
+</body>
+</html>

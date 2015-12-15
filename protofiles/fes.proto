@@ -1,0 +1,64 @@
+package eig.fes;
+
+option java_package = "cn.beepower.eig.fes";
+
+// ---------------- terminal -----------------------
+message PowerValue {
+	enum PhasorType {
+		PHASOR_A = 1;
+		PHASOR_B = 2;
+		PHASOR_AB = 3;
+		PHASOR_C = 4;
+		PHASOR_AC = 5;
+		PHASOR_BC = 6;
+		PHASOR_ABC = 7;
+	}
+
+	optional bool switchOn = 1 ;
+
+	optional float reserved   = 2 [default = -999999.9];
+
+	optional float p   = 3 [default = -999999.9];
+	optional float theta = 4 [default = -999999.9];
+	optional float v   = 5 [default = -999999.9];
+	optional float i   = 6 [default = -999999.9];
+
+	optional float frequency = 7 [default = 0];
+	optional float energy = 8  [default = -999999.9];
+
+	optional PhasorType phasorType = 14 [default = PHASOR_A];
+	optional int64 t = 15 [default = 0];
+}
+
+message PowerValues {
+	repeated PowerValue m = 1;
+}
+
+message TerminalIds {
+	repeated string powerSocketIds = 1;
+	repeated string infraredControllerIds = 2;
+	repeated int32 socketStatus = 3;
+}
+
+message SckControlBack {
+	enum FailureCode {
+		TIMEOUT = 1;
+		SCK_REJECT = 2;
+		PERMISSION_DENIED = 3;
+	}
+	required string clientId = 1;
+	required int64 msgId = 2;
+	required int32 ctrlFlag = 3;
+	required bool result = 4;
+	optional FailureCode code = 5;
+}
+
+message EigSys {
+	optional int64 snReceivedPackageCount = 1;
+	optional int64 snSentPackageCount = 2;
+	optional int64 snReceivedByteCount = 3;
+	optional int64 snSentByteCount = 4;
+	optional int64 serialSentByteCount = 5;
+	optional int64 serialReceivedByteCount = 6;
+	optional string url = 15;
+}
