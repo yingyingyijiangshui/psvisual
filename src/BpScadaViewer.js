@@ -8,7 +8,7 @@ Namespace.register("beepower.svg");
 //定义Viewer类
 beepower.svg.ScadaViewer = function() {};
 
-beepower.svg.ScadaViewer.prototype.load = function(svgPath) {
+beepower.svg.ScadaViewer.prototype.load = function(svgPath, div) {
     //
     var descStart = "MeasureResult/";
     //
@@ -45,9 +45,10 @@ beepower.svg.ScadaViewer.prototype.load = function(svgPath) {
         //d3's selection.node() returns the DOM node, so we
         //can use plain Javascript to append content
         //use plain Javascript to extract the node
-        var main_chart_svg = d3.select("body");
-        main_chart_svg.node().appendChild(svgNode);
-        var innerSVG = main_chart_svg.select("svg");
+        var div = d3.select("body");
+        //var div = div;
+        div.node().appendChild(svgNode);
+        var innerSVG = div.select("svg");
         innerSVG.selectAll("text").filter(function (d, i) {
             //this是Document中的text元素
             var desc = this.getElementsByTagName("desc");
@@ -69,5 +70,13 @@ beepower.svg.ScadaViewer.prototype.load = function(svgPath) {
             }
             return false;
         });
+        innerSVG.attr("width", "100%").attr("height", "100%").attr("preserveAspectRatio", "xMidYMid meet");
+        innerSVG.select("g").style("opacity", 0.5);
+        var zoom = d3.behavior.zoom().scaleExtent([0.5, 10]).on("zoom", zoomed);
+        function zoomed() {
+            //d3.select(this).attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            //d3.select(this).select('g').attr("transform","translate(" + d3.event.translate + ")"+ " scale(" + d3.event.scale + ")");
+        }
+        innerSVG.call(zoom);
     });
 };
