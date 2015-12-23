@@ -166,6 +166,12 @@ beepower.bus.MqttDataBus.prototype.publish = function(publishOptions) {
         this.client.send(publishOptions.topic, payLoad.encode().toBuffer(), qos, retain_flag);
 };
 
+/**
+ *
+ * @param topic
+ * @param wildCardTopic 带有通配符的主题
+ * @returns {boolean} 是否匹配
+ */
 beepower.bus.MqttDataBus.prototype.match = function(topic, wildCardTopic) {
     function equals(t, wt) {
         if ( t == wt ) return true;
