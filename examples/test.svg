@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="158.11501"
-     inkscape:cy="147.18758"
+     inkscape:zoom="1.979899"
+     inkscape:cx="274.82879"
+     inkscape:cy="-104.03158"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -277,6 +277,9 @@
        id="text559"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4196">MeasureResult/Sck-10-24012807004b1200/p</desc>
+
+
+
 功率 0.0</text>
     <text
        y="335.73111"
@@ -287,6 +290,9 @@
        id="text561"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4198">MeasureResult/Sck-10-24012807004b1200/v</desc>
+
+
+
 功率 0.0</text>
     <text
        y="349.76688"
@@ -297,6 +303,9 @@
        id="text563"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4200">MeasureResult/Sck-10-24012807004b1200/i</desc>
+
+
+
 功率 0.0</text>
     <g
        transform="matrix(0.70134333,0,0,0.56738929,-556.24269,-280.95331)"
@@ -329,6 +338,9 @@
        id="text573"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4220">MeasureResult/Sck-10-24012807004b1200/p</desc>
+
+
+
 功率 0.0</text>
     <text
        y="290.3349"
@@ -339,6 +351,9 @@
        id="text575"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4222">MeasureResult/Sck-10-24012807004b1200/v</desc>
+
+
+
 功率 0.0</text>
     <text
        y="304.37067"
@@ -349,6 +364,9 @@
        id="text577"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4224">MeasureResult/Sck-10-24012807004b1200/i</desc>
+
+
+
 功率 0.0</text>
     <text
        y="327.90869"
@@ -366,6 +384,9 @@
        id="text581"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4226">MeasureResult/Sck-10-be0fab05004b1200/p</desc>
+
+
+
 功率 0.0</text>
     <text
        y="355.98019"
@@ -376,6 +397,9 @@
        id="text583"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4228">MeasureResult/Sck-10-be0fab05004b1200/v</desc>
+
+
+
 功率 0.0</text>
     <text
        y="370.01596"
@@ -386,6 +410,9 @@
        id="text585"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4230">MeasureResult/Sck-10-be0fab05004b1200/i</desc>
+
+
+
 功率 0.0</text>
     <text
        y="393.55408"
@@ -403,6 +430,9 @@
        id="text589"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4232">MeasureResult/Sck-10-86fc2707004b1200/p</desc>
+
+
+
 功率 0.0</text>
     <text
        y="421.62558"
@@ -413,6 +443,9 @@
        id="text591"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4234">MeasureResult/Sck-10-86fc2707004b1200/v</desc>
+
+
+
 功率 0.0</text>
     <text
        y="435.66135"
@@ -423,6 +456,9 @@
        id="text593"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4236">MeasureResult/Sck-10-86fc2707004b1200/i</desc>
+
+
+
 功率 0.0</text>
     <text
        y="307.65961"
@@ -440,6 +476,9 @@
        id="text597"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4208">MeasureResult/Sck-10-cff62707004b1200/p</desc>
+
+
+
 功率 0.0</text>
     <text
        y="335.73111"
@@ -450,6 +489,9 @@
        id="text599"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4210">MeasureResult/Sck-10-cff62707004b1200/v</desc>
+
+
+
 功率 0.0</text>
     <text
        y="349.76688"
@@ -460,6 +502,9 @@
        id="text601"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4212">MeasureResult/Sck-10-cff62707004b1200/i</desc>
+
+
+
 功率 0.0</text>
     <text
        y="371.92691"
@@ -477,6 +522,9 @@
        id="text605"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4202">MeasureResult/Sck-10-23fa2707004b1200/p</desc>
+
+
+
 功率 0.0</text>
     <text
        y="399.99841"
@@ -487,6 +535,9 @@
        id="text607"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4204">MeasureResult/Sck-10-23fa2707004b1200/v</desc>
+
+
+
 功率 0.0</text>
     <text
        y="414.03418"
@@ -497,10 +548,15 @@
        id="text609"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4206">MeasureResult/Sck-10-23fa2707004b1200/i</desc>
+
+
+
 功率 0.0</text>
     <g
        transform="matrix(0.70134333,0,0,0.56738929,-556.24269,-280.95331)"
        id="g611">
+      <desc
+         id="desc4225">bpAnalog/Sck-10-78fa2707004b1200/p</desc>
       <circle
          style="fill:#0079ff"
          cx="1419.661"
@@ -528,7 +584,10 @@
        font-size="12"
        id="text619"
        transform="scale(1.1117951,0.89944628)"><desc
-   id="desc4214">MeasureResult/Sck-10-81f42707004b1200/p</desc>
+   id="desc4214">bpAnalog/Sck-10-78fa2707004b1200/p</desc>
+
+
+
 功率 0.0</text>
     <text
        y="423.08682"
@@ -539,6 +598,9 @@
        id="text621"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4216">MeasureResult/Sck-10-81f42707004b1200/v</desc>
+
+
+
 功率 0.0</text>
     <text
        y="437.12259"
@@ -549,6 +611,9 @@
        id="text623"
        transform="scale(1.1117951,0.89944628)"><desc
    id="desc4218">MeasureResult/Sck-10-81f42707004b1200/i</desc>
+
+
+
 功率 0.0</text>
     <g
        transform="matrix(0.70134333,0,0,0.56738929,-556.24269,-280.95331)"
